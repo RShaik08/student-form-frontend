@@ -20,7 +20,7 @@ const Form = () => {
     };
 
     try {
-      const response = await fetch('https://student-form-ddnw.onrender.com', {
+      const response = await fetch('https://student-form-ddnw.onrender.com/students', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(studentData),
@@ -79,13 +79,43 @@ const Form = () => {
           />
         </div>
         <div>
-          <label>Gender:</label><br />
-          <input
-            type="text"
-            value={gender}
-            onChange={(e) => setGender(e.target.value)}
-            required
-          />
+          <label>Gender:</label>
+<div>
+  <label>
+    <input
+      type="radio"
+      name="gender"
+      value="Male"
+      checked={gender === 'Male'}
+      onChange={(e) => setGender(e.target.value)}
+      required
+    />
+    Male
+  </label>
+  <label>
+    <input
+      type="radio"
+      name="gender"
+      value="Female"
+      checked={gender === 'Female'}
+      onChange={(e) => setGender(e.target.value)}
+      required
+    />
+    Female
+  </label>
+  <label>
+    <input
+      type="radio"
+      name="gender"
+      value="Other"
+      checked={gender === 'Other'}
+      onChange={(e) => setGender(e.target.value)}
+      required
+    />
+    Other
+  </label>
+</div>
+
         </div>
         <div>
           <label>Skills (comma separated):</label><br />
