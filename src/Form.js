@@ -1,13 +1,21 @@
 import React, { useState } from 'react';
-import './Form.css'; 
+import './Form.css';
+const skillOptions = ['JavaScript', 'React', 'Node', 'CSS', 'HTML'];
 
 const Form = () => {
   const [name, setName] = useState('');
   const [rollno, setRollno] = useState('');
   const [gender, setGender] = useState('');
-  const [skills, setSkills] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [skills, setSkills] = useState([]);
+
+  const handleSkillChange = (e) => {
+    const skill = e.target.value;
+    if (e.target.checked) {
+      setSkills([...skills, skill]);
+    } else {
+      setSkills(skills.filter((s) => s !== skill));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,7 +24,7 @@ const Form = () => {
       name,
       rollno,
       gender,
-      skills: skills.split(',').map(skill => skill.trim()).filter(skill => skill !== ''),
+      skills,
     };
 
     try {
@@ -29,110 +37,112 @@ const Form = () => {
       if (response.status === 201) {
         const data = await response.json();
         console.log('Student added:', data);
-        setSuccessMessage('Student added successfully!');
-        setErrorMessage('');
-        // Clear form fields
+        alert('Student added successfully!');
+        // Reset form fields
         setName('');
         setRollno('');
         setGender('');
-        setSkills('');
-      } else if (response.status === 204) {
-        console.log('Request succeeded with no content');
-        setSuccessMessage('Student added successfully!');
-        setErrorMessage('');
-        // Clear form fields
-        setName('');
-        setRollno('');
-        setGender('');
-        setSkills('');
+        setSkills([]);
       } else {
-        console.log('Unexpected response status:', response.status);
-        setErrorMessage('Unexpected error occurred. Please try again.');
-        setSuccessMessage('');
+        console.log('Failed to add student. Status:', response.status);
+        alert('Failed to add student');
       }
     } catch (error) {
       console.error('Error adding student:', error);
-      setErrorMessage('Failed to add student. Please try again later.');
-      setSuccessMessage('');
+      alert('Error adding student');
     }
   };
 
   return (
-    <div>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Name:</label><br />
-          <input
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Roll Number:</label><br />
-          <input
-            type="text"
-            value={rollno}
-            onChange={(e) => setRollno(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Gender:</label>
-<div>
-  <label>
-    <input
-      type="radio"
-      name="gender"
-      value="Male"
-      checked={gender === 'Male'}
-      onChange={(e) => setGender(e.target.value)}
-      required
-    />
-    Male
-  </label>
-  <label>
-    <input
-      type="radio"
-      name="gender"
-      value="Female"
-      checked={gender === 'Female'}
-      onChange={(e) => setGender(e.target.value)}
-      required
-    />
-    Female
-  </label>
-  <label>
-    <input
-      type="radio"
-      name="gender"
-      value="Other"
-      checked={gender === 'Other'}
-      onChange={(e) => setGender(e.target.value)}
-      required
-    />
-    Other
-  </label>
-</div>
+    <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: 'auto' }}>
+      <div style={{ marginBottom: '12px' }}>
+        <label>Name:</label><br />
+        <input
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          style={{ width: '100%', padding: '8px' }}
+        />
+      </div>
 
-        </div>
-        <div>
-          <label>Skills (comma separated):</label><br />
+      <div style={{ marginBottom: '12px' }}>
+        <label>Roll Number:</label><br />
+        <input
+          type="text"
+          value={rollno}
+          onChange={(e) => setRollno(e.target.value)}
+          required
+          style={{ width: '100%', padding: '8px' }}
+        />
+      </div>
+
+      <div style={{ marginBottom: '12px' }}>
+        <label>Gender:</label><br />
+        <label style={{ marginRight: '10px' }}>
           <input
-            type="text"
-            value={skills}
-            onChange={(e) => setSkills(e.target.value)}
+            type="radio"
+            name="gender"
+            value="Male"
+            checked={gender === 'Male'}
+            onChange={(e) => setGender(e.target.value)}
             required
           />
-        </div>
-        <button type="submit" style={{ marginTop: '10px' }}>Submit</button>
-      </form>
+          Male
+        </label>
+        <label style={{ marginRight: '10px' }}>
+          <input
+            type="radio"
+            name="gender"
+            value="Female"
+            checked={gender === 'Female'}
+            onChange={(e) => setGender(e.target.value)}
+            required
+          />
+          Female
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="gender"
+            value="Other"
+            checked={gender === 'Other'}
+            onChange={(e) => setGender(e.target.value)}
+            required
+          />
+          Other
+        </label>
+      </div>
 
-      {/* Success and error messages */}
-      {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-      {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-    </div>
+      <div style={{ marginBottom: '12px' }}>
+        <label>Skills:</label><br />
+        {skillOptions.map((skill) => (
+          <label key={skill} style={{ marginRight: '10px' }}>
+            <input
+              type="checkbox"
+              value={skill}
+              checked={skills.includes(skill)}
+              onChange={handleSkillChange}
+            />
+            {skill}
+          </label>
+        ))}
+      </div>
+
+      <button
+        type="submit"
+        style={{
+          padding: '10px 20px',
+          backgroundColor: '#6BBF59',
+          border: 'none',
+          color: 'white',
+          cursor: 'pointer',
+          fontWeight: 'bold',
+        }}
+      >
+        Submit
+      </button>
+    </form>
   );
 };
 
